@@ -55,10 +55,10 @@ void recebe_notas ( float *notas, int *APR, int tamanho){
     int contador = 0;
 
     for(contador = 0; contador < tamanho; contador++){
-        if (notas[contador] >= 6.0)
-            APR[contador] = 1;
+        if (*(notas + contador) >= 6.0)
+            *(APR + contador) = 1;
         else
-            APR[contador] = 0;
+            *(APR + contador) = 0;
     }
 
 }
@@ -67,10 +67,10 @@ void contador_notas (int *APR, int tamanho, int  *aprovados, int *reprovados){
     int contador = 0;
 
     for (contador = 0; contador < tamanho; contador++){
-        if(APR[contador] == 1)
+        if(*(APR + contador) == 1)
             *aprovados += 1;
 
-        else if(APR[contador] == 0)
+        else if(*(APR + contador) == 0)
             *reprovados += 1;
 
     }
@@ -79,7 +79,7 @@ void contador_notas (int *APR, int tamanho, int  *aprovados, int *reprovados){
 
 int percent_aprov (int *aprovados, int *reprovados, float *perc_aprov, float *perc_reprov){
     *perc_aprov = ((*aprovados)  / 10.00) * 100.00 ;
-    *perc_reprov = (*reprovados / 10.00) * 100.00;
+    *perc_reprov = ((*reprovados )/ 10.00) * 100.00;
 
     if (*aprovados > 5)
         return 1;
