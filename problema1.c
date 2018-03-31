@@ -3,9 +3,7 @@
 
 #define TAMANHO 10
 
-int nivel_agitacao = 0;     // o neurônio já começa inibido
-
-void fneuronio(float *entradas, float *pesos, int tamanho_vetor, float limiar);
+void fneuronio(float *entradas, float *pesos, int tamanho_vetor, float limiar, int *agitacao);
 
 int main(){
 
@@ -13,6 +11,8 @@ int main(){
   float pesos[TAMANHO];
   float limiar_T;
   int contador = 0;
+  int nivel_agitacao = 0;     // o neurônio já começa inibido
+  int *Pnivel_agitacao = &nivel_agitacao;
 
   for(contador = 0; contador < TAMANHO; contador++){
     printf("Entre com o valor do %dº entrada: ", (contador + 1) );
@@ -33,20 +33,28 @@ int main(){
 
   printf("\n" );
 
-  fneuronio(entradas, pesos, TAMANHO, limiar_T);
+  fneuronio(entradas, pesos, TAMANHO, limiar_T, Pnivel_agitacao);
+
+  if(nivel_agitacao == 1)
+    printf("“Neurônio ativado!”\n");
+  else
+    printf("“Neurônio inibido!”\n");
 
   return 0;
 }
 
-void fneuronio (float *entradas, float *pesos, int tamanho_vetor, float limiar){
+void fneuronio (float *entradas, float *pesos, int tamanho_vetor, float limiar, int *agitacao){
 
   int contador = 0;
-  float media_ponderada = 0.0;
+  float SOMAP = 0.0;
 
   for(contador = 0; contador < tamanho_vetor; contador++){
-    media_ponderada += *(entradas + contador) * *(pesos + contador);
+    SOMAP += *(entradas + contador) * *(pesos + contador);
   }
 
-  printf("%f\n", media_ponderada );
+  if(SOMAP > limiar){
+    *agitacao = 1;
+  }
+
 
 }
