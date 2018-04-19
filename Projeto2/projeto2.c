@@ -6,7 +6,8 @@ int main (int argc, char *argv[])
 {
     FILE *fp;
     int numero,linha = 0, col = 0;          // declaração de caracteres
-    char pegar_c , palavra , p_virg = ';';
+    char pegar_p , palavra , p_virg = ';';
+    int i,j, **mat;
 
     if (argc!=2) {
         printf("Você esqueceu de importar o arquivo.\n");      // mensagem caso o arquivo não seja indicado
@@ -33,9 +34,42 @@ int main (int argc, char *argv[])
 
     }
 
+    col++;
 
-    printf("%d\n", linha );
-    printf("%d\n", col );
+    mat = (int**)malloc(linha*sizeof(int *));
+
+    for(i = 0; i<linha; i++)                         //declaração da matriz
+      *(mat+i) = (int*)malloc(col*sizeof(int));
+
+    rewind(fp); //voltando o ponteiro do arquivo para o ínicio
+
+
+    for (i=0;i<linha;i++){
+        for (j=0;j<col;j++){
+
+           if (!feof(fp)){
+              // to do: implementar o contador e verificar como ler o número sem ponto e virgula
+                fscanf(fp, "%d%c", *(mat+i)+j, &pegar_p);
+          }
+      }
+    }
+
+    for (i=0;i<linha;i++){
+      for (j=0;j<col;j++){
+          printf("%d ",*(*(mat+i)+j));    // imprime a matriz
+          }
+          printf("\n");
+        }
+
+      for (i=0;i<linha;i++)       //libera as linhas da matriz
+        free(*(mat+i));
+
+      free(mat);    // libera o vetor de ponteiros
+
+
+
+    printf("numero de linhas: %d\n", linha );
+    printf("numero de colunas: %d\n", col );
 
     fclose(fp);
     return 0;
