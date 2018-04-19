@@ -1,3 +1,7 @@
+//autores: 
+// Joberth Rogers Tavares Costa - 16/0128013
+// Elias Bernardo Marques Magalhães - 15/0009011
+
 #include<stdio.h>
 #include<stdlib.h>
 
