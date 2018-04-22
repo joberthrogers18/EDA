@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 void mediamatriz(int **, int, int);
+float trans_bin_dec(char *bin);
 
 int main (int argc, char *argv[])
 {
@@ -89,7 +91,7 @@ int main (int argc, char *argv[])
 }
 
 void mediamatriz(int **M, int L, int C){
-  int i, j, contl = 0, contc = 0;
+  int i, j, contl = 0, contc = 0, menor = 999999999, num;
   char bin_c[9], bin[3][3], bit_2;
 
   float soma = 0.0;
@@ -108,7 +110,7 @@ void mediamatriz(int **M, int L, int C){
 
     for(i = L - 1; i<L + 2; i++){
           for(j = C - 1; j<C + 2; j++){
-            if(soma >= *(*(M+i)+j)){
+            if(soma < *(*(M+i)+j)){
               bin[contl][contc] = '1';
               contc++;
             }
@@ -133,13 +135,19 @@ void mediamatriz(int **M, int L, int C){
           printf("%c ", bin_c[i]);
     }
 
+    num =  trans_bin_dec(bin_c);
+
+    if(num < menor){
+      menor = num;
+    }
+
     printf("\n");
 
     bit_2 = 'a';
-    int zre = 0;
 
     for (i = 0; i < 9; i++) {
-      bit_2 = bin_c[zre];
+
+      bit_2 = bin_c[0];
       for (j = 0; j < 9; j++) {
         bin_c[j] = bin_c[j+1];
       }
@@ -149,8 +157,34 @@ void mediamatriz(int **M, int L, int C){
             printf("%c ", bin_c[l]);
       }
 
+      num =  trans_bin_dec(bin_c);
+
+      if(num < menor){
+        menor = num;
+      }
+
       printf("\n");
     }
 
+    printf("%d\n", menor);
 
+}
+
+float trans_bin_dec(char *bin){
+  int i, j;
+  float dec;
+
+  printf("|");
+
+  for ( i = 0; i < 9; i++) {
+    if(*(bin + i) == '1'){
+      dec += pow(2,8 - i);
+    }
+  }
+
+  printf(" decimal: %lf ", dec);
+
+  printf("|");
+
+  return dec;
 }
