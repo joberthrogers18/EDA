@@ -89,7 +89,8 @@ int main (int argc, char *argv[])
 }
 
 void mediamatriz(int **M, int L, int C){
-  int i, j, bin[3][3], contl = 0, contc = 0;
+  int i, j, contl = 0, contc = 0;
+  char bin_c[9], bin[3][3], bit_2;
 
   float soma = 0.0;
 
@@ -101,19 +102,55 @@ void mediamatriz(int **M, int L, int C){
 
   soma = soma / 9.0;
 
+  printf("%f\n", soma);
 
+    printf("\n");
 
-for(i = L - 1; i<L + 2; i++){
-        for(j = C - 1; j<C + 2; j++){
-          if(soma >= *(*(M+i)+j)){
-            printf("%d,",1);
+    for(i = L - 1; i<L + 2; i++){
+          for(j = C - 1; j<C + 2; j++){
+            if(soma >= *(*(M+i)+j)){
+              bin[contl][contc] = '1';
+              contc++;
+            }
+            else{
+              bin[contl][contc] = '0';
+              contc++;
+            }
           }
-          else{
-            printf("%d,",0);
-          }
-        }
+      }
+
+    bin_c[0] = bin[0][0];
+    bin_c[1] = bin[0][1];
+    bin_c[2] = bin[0][2];
+    bin_c[3] = bin[1][2];
+    bin_c[4] = bin[2][2];
+    bin_c[5] = bin[2][1];
+    bin_c[6] = bin[2][0];
+    bin_c[7] = bin[1][0];
+    bin_c[8] = bin[1][1];
+
+    for(i = 0; i< 9; i++){
+          printf("%c ", bin_c[i]);
     }
 
     printf("\n");
+
+    bit_2 = 'a';
+    int zre = 0;
+
+    for (i = 0; i < 9; i++) {
+      bit_2 = bin_c[zre];
+      for (j = 0; j < 9; j++) {
+        bin_c[j] = bin_c[j+1];
+      }
+      bin_c[8] = bit_2;
+
+      for(int l= 0; l< 9; l++){
+            printf("%c ", bin_c[l]);
+      }
+
+      printf("\n");
+    }
+
 
 }
