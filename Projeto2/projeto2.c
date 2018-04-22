@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-void mediamatriz(int **, int, int);
+int mediamatriz(int **, int, int);
 float trans_bin_dec(char *bin);
 
 int main (int argc, char *argv[])
@@ -11,7 +11,8 @@ int main (int argc, char *argv[])
     FILE *fp;
     int numero,linha = 0, col = 0;          // declaração de caracteres
     char pegar_p , palavra , p_virg = ';';
-    int i,j, **mat, cont = 0, *media;
+    int i,j, **mat, cont = 0, *media, menor = 0;
+    int *freq;
 
     /*if (argc!=2) {
         printf("Você esqueceu de importar o arquivo.\n");      // mensagem caso o arquivo não seja indicado
@@ -49,6 +50,9 @@ int main (int argc, char *argv[])
 
     rewind(fp); //voltando o ponteiro do arquivo para o ínicio
 
+    for (i = 0; i < 512; i++) {
+      printf("%d", freq[i]);
+    }
 
     for (i=0;i<linha;i++){
         for (j=0;j<col;j++){
@@ -62,11 +66,19 @@ int main (int argc, char *argv[])
 
     cont = 0;
 
+    freq = (int*)calloc(512,sizeof(int));
+
     for(i = 1; i<linha - 1; i++){
       for(j = 1; j<col - 1; j++){     //verificar toda a posição da matriz com seus vizinhos
-          mediamatriz(mat, i, j);
+          menor = mediamatriz(mat, i, j);
+          printf("menor fora: %d\n",menor );
+          *(freq + menor) += 1;
           cont++;
         }
+      }
+
+      for (i = 0; i < 512; i++) {
+        printf("%d", freq[i]);
       }
 
     for (i=0;i<linha;i++){
@@ -83,6 +95,8 @@ int main (int argc, char *argv[])
 
       free(media);
 
+      free(freq);
+
     printf("numero de linhas: %d\n", linha );
     printf("numero de colunas: %d\n", col );
 
@@ -90,7 +104,7 @@ int main (int argc, char *argv[])
     return 0;
 }
 
-void mediamatriz(int **M, int L, int C){
+int mediamatriz(int **M, int L, int C){
   int i, j, contl = 0, contc = 0, menor = 999999999, num;
   char bin_c[9], bin[3][3], bit_2;
 
@@ -167,6 +181,8 @@ void mediamatriz(int **M, int L, int C){
     }
 
     printf("%d\n", menor);
+
+    return menor;
 
 }
 
