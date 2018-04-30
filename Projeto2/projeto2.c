@@ -5,6 +5,7 @@
 
 int mediamatriz(int **, int, int);
 float trans_bin_dec(char *bin);
+void glcm(int **, int, int, int, int);
 
 int main (int argc, char *argv[])
 {
@@ -50,7 +51,10 @@ int main (int argc, char *argv[])
 
     rewind(fp); //voltando o ponteiro do arquivo para o ínicio
 
-    for (i = 0; i < 512; i++) {
+
+    freq = (int*)calloc(536,sizeof(int));
+
+    for (i = 0; i < 536; i++) {
       printf("%d", freq[i]);
     }
 
@@ -65,8 +69,6 @@ int main (int argc, char *argv[])
     }
 
     cont = 0;
-
-    freq = (int*)calloc(512,sizeof(int));
 
     for(i = 1; i<linha - 1; i++){
       for(j = 1; j<col - 1; j++){     //verificar toda a posição da matriz com seus vizinhos
@@ -87,6 +89,23 @@ int main (int argc, char *argv[])
           }
           printf("\n");
         }
+
+    glcm(mat , linha, col, 0, -1); // esquerda
+    printf("\n");
+    glcm(mat, linha, col, 0, +1 ); // direita
+    printf("\n");
+    glcm(mat , linha, col, -1, 0); // cima
+    printf("\n");
+    glcm(mat , linha, col, +1, 0); // baixo
+    printf("\n");
+    glcm(mat , linha, col, -1, -1); // diagonal superior esquerda
+    printf("\n");
+    glcm(mat , linha, col, -1, +1); // diagonal superior direita
+    printf("\n");
+    glcm(mat , linha, col, +1, +1); // diagonal inferior direita
+    printf("\n");
+    glcm(mat , linha, col, +1, -1); // diagonal inferior esquerda
+    printf("\n");
 
       for (i=0;i<linha;i++)       //libera as linhas da matriz
         free(*(mat+i));
@@ -117,8 +136,6 @@ int mediamatriz(int **M, int L, int C){
   }
 
   soma = soma / 9.0;
-
-  printf("%f\n", soma);
 
     printf("\n");
 
@@ -167,10 +184,6 @@ int mediamatriz(int **M, int L, int C){
       }
       bin_c[8] = bit_2;
 
-      for(int l= 0; l< 9; l++){
-            printf("%c ", bin_c[l]);
-      }
-
       num =  trans_bin_dec(bin_c);
 
       if(num < menor){
@@ -190,17 +203,53 @@ float trans_bin_dec(char *bin){
   int i, j;
   float dec;
 
-  printf("|");
-
   for ( i = 0; i < 9; i++) {
     if(*(bin + i) == '1'){
       dec += pow(2,8 - i);
     }
   }
 
-  printf(" decimal: %lf ", dec);
-
-  printf("|");
-
   return dec;
+}
+
+
+void glcm(int **img , int L, int C, int pos_lin, int pos_col){
+  int **glcm, i, j, lin_glcm, col_glcm;
+  float energia = 0.0, contraste = 0.0, homogeneidade = 0.0;
+
+  glcm = (int**)calloc(256,sizeof(int *));
+
+  for(i = 0; i<256; i++)                         //declaração da matriz
+    *(glcm+i) = (int*)calloc(256,sizeof(int));
+
+
+    for(i = 1; i<L - 1; i++){
+      for(j = 1; j<C - 1; j++){     //verificar toda a posição da matriz com seus vizinhos
+          lin_glcm = img[i][j];
+          col_glcm = img[i + pos_lin][j + pos_col]; // posição linha e posição coluna define para qual direção o glcm irá indicar cima/baixo/direita/esquerda..
+          *(*(glcm+lin_glcm)+col_glcm) += 1;
+
+        }
+      }
+
+      for (i = 0; i < 256; i++){
+          for (j = 0; j < 256; j++){
+          if(*(*(glcm + i)+ j) >= 1){
+            contraste += (*(*(glcm + i)+ j)) * pow(i - j, 2);    //imprimir onde esta colocando na matriz
+            energia += pow((*(*(glcm + i)+ j)), 2);
+            homogeneidade += (*(*(glcm + i)+ j))/(pow(i - j, 2) + 1);
+          }
+        }
+      }
+
+    energia = sqrt(energia);
+
+    printf("Cont: %f ener: %f homo: %f \n", contraste, energia, homogeneidade);
+
+   for (i=0;i<256;i++)       //libera as linhas da matriz
+      free(*(glcm+i));
+
+    free(glcm);    // libera o vetor de ponteiros
+
+
 }
