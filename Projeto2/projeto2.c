@@ -5,7 +5,8 @@
 
 int mediamatriz(int **, int, int);
 float trans_bin_dec(char *bin);
-void glcm(int **, int, int, int, int);
+void glcm(int **, int, int, int, int, float *, int);
+void normalizacao(float *);
 
 int main (int argc, char *argv[])
 {
@@ -13,7 +14,7 @@ int main (int argc, char *argv[])
     int numero,linha = 0, col = 0;          // declaração de caracteres
     char pegar_p , palavra , p_virg = ';';
     int i,j, **mat, cont = 0, *media, menor = 0;
-    int *freq;
+    float *freq;
 
     /*if (argc!=2) {
         printf("Você esqueceu de importar o arquivo.\n");      // mensagem caso o arquivo não seja indicado
@@ -52,10 +53,10 @@ int main (int argc, char *argv[])
     rewind(fp); //voltando o ponteiro do arquivo para o ínicio
 
 
-    freq = (int*)calloc(536,sizeof(int));
+    freq = (float*)calloc(536,sizeof(float));
 
     for (i = 0; i < 536; i++) {
-      printf("%d", freq[i]);
+      printf("%f", freq[i]);
     }
 
     for (i=0;i<linha;i++){
@@ -64,8 +65,8 @@ int main (int argc, char *argv[])
            if (!feof(fp)){
               // to do: implementar o contador e verificar como ler o número sem ponto e virgula
                 fscanf(fp, "%d%c", *(mat+i)+j, &pegar_p);
-          }
       }
+    }
     }
 
     cont = 0;
@@ -73,14 +74,15 @@ int main (int argc, char *argv[])
     for(i = 1; i<linha - 1; i++){
       for(j = 1; j<col - 1; j++){     //verificar toda a posição da matriz com seus vizinhos
           menor = mediamatriz(mat, i, j);
+          menor = menor - 1;
           printf("menor fora: %d\n",menor );
           *(freq + menor) += 1;
           cont++;
         }
       }
 
-      for (i = 0; i < 512; i++) {
-        printf("%d", freq[i]);
+      for (i = 0; i < 536; i++) {
+        printf("%.1f;", freq[i]);
       }
 
     for (i=0;i<linha;i++){
@@ -90,22 +92,32 @@ int main (int argc, char *argv[])
           printf("\n");
         }
 
-    glcm(mat , linha, col, 0, -1); // esquerda
+    glcm(mat , linha, col, 0, -1, freq, 512); // esquerda
     printf("\n");
-    glcm(mat, linha, col, 0, +1 ); // direita
+    glcm(mat, linha, col, 0, +1, freq, 515); // direita
     printf("\n");
-    glcm(mat , linha, col, -1, 0); // cima
+    glcm(mat , linha, col, -1, 0, freq, 518); // cima
     printf("\n");
-    glcm(mat , linha, col, +1, 0); // baixo
+    glcm(mat , linha, col, +1, 0, freq, 521); // baixo
     printf("\n");
-    glcm(mat , linha, col, -1, -1); // diagonal superior esquerda
+    glcm(mat , linha, col, -1, -1, freq, 524); // diagonal superior esquerda
     printf("\n");
-    glcm(mat , linha, col, -1, +1); // diagonal superior direita
+    glcm(mat , linha, col, -1, +1, freq, 527); // diagonal superior direita
     printf("\n");
-    glcm(mat , linha, col, +1, +1); // diagonal inferior direita
+    glcm(mat , linha, col, +1, +1, freq, 530); // diagonal inferior direita
     printf("\n");
-    glcm(mat , linha, col, +1, -1); // diagonal inferior esquerda
+    glcm(mat , linha, col, +1, -1, freq, 533); // diagonal inferior esquerda
     printf("\n");
+
+    for (i = 0; i < 536; i++) {
+      printf("%.1f;", freq[i]);
+    }
+
+    normalizacao(freq);
+
+    for (i = 0; i < 536; i++) {
+      printf("%.1f;", freq[i]);
+    }
 
       for (i=0;i<linha;i++)       //libera as linhas da matriz
         free(*(mat+i));
@@ -213,7 +225,7 @@ float trans_bin_dec(char *bin){
 }
 
 
-void glcm(int **img , int L, int C, int pos_lin, int pos_col){
+void glcm(int **img , int L, int C, int pos_lin, int pos_col, float *freq, int pos_freq){
   int **glcm, i, j, lin_glcm, col_glcm;
   float energia = 0.0, contraste = 0.0, homogeneidade = 0.0;
 
@@ -244,6 +256,10 @@ void glcm(int **img , int L, int C, int pos_lin, int pos_col){
 
     energia = sqrt(energia);
 
+    *(freq + pos_freq) = contraste;
+    *(freq + (pos_freq + 1)) = energia;
+    *(freq + (pos_freq + 2)) = homogeneidade;
+
     printf("Cont: %f ener: %f homo: %f \n", contraste, energia, homogeneidade);
 
    for (i=0;i<256;i++)       //libera as linhas da matriz
@@ -251,5 +267,25 @@ void glcm(int **img , int L, int C, int pos_lin, int pos_col){
 
     free(glcm);    // libera o vetor de ponteiros
 
+
+}
+
+void normalizacao(float *freq){
+  int i = 0;
+  float menor = 999999999, maior = 0;
+
+  for(i = 0; i < 536; i++){
+    if(*(freq + i) > maior){
+        maior = *(freq + i);
+    }
+
+    if(*(freq + i) < menor){
+      menor = *(freq + i);
+    }
+  }
+
+  for(i = 0; i < 536; i++){
+    *(freq + i) = (*(freq + i) - menor) / (maior - menor);
+  }
 
 }
