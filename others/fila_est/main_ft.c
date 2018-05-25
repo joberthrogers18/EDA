@@ -8,5 +8,7 @@ int main(int argc, char const *argv[]) {
 
   liberar_Fila(fi);
 
+  int x = tamanho_Fila(fi);
+
   return 0;
 }

@@ -20,3 +20,18 @@ Fila* cria_Fila(){
 void liberar_Fila(Fila* fi){ //destruir a fila
   free(fi);
 }
+
+int tamanho_Fila(Fila* fi){
+  if(fi == NULL){
+    return -1;
+  }
+  return fi->qtd;
+}
+
+int Fila_cheia(Fila* fi){
+  if(fi == NULL)return -1;
+  if(fi->qtd == MAX)
+    return 1;
+  else
+    return 0;
+}

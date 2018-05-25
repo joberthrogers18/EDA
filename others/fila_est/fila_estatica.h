@@ -13,4 +13,8 @@ Fila* cria_Fila(); // função para criar uma fila nula
 
 void liberar_Fila(Fila* fi); // destruir a fila
 
+int tamanho_Fila(Fila* fi);
+
+int Fila_cheia(Fila* fi);
+
 #endif
