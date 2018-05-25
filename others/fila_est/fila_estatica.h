@@ -11,4 +11,6 @@ struct aluno{
 
 Fila* cria_Fila(); // função para criar uma fila nula
 
+void liberar_Fila(Fila* fi); // destruir a fila
+
 #endif
