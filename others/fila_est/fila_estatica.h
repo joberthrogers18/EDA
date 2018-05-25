@@ -9,4 +9,6 @@ struct aluno{
 };
   typedef struct fila Fila; // definindo struct fila
 
+Fila* cria_Fila(); // função para criar uma fila nula
+
 #endif
