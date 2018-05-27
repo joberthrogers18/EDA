@@ -23,10 +23,19 @@ int push (Ppilha p, int val){
     return -1;  // no caso se a pilha estiver cheia
 
   (p->topo)++; //somando o ponteiro do topo mais um para acrescentar
-  p->valor[p->topo] = val; //o valor daquela posição eh atribuido 
+  p->valor[p->topo] = val; //o valor daquela posição eh atribuido
   return 1;
 
+}
 
+int pop(Ppilha p, int *res){ // recebe a pilha e o valor que será armazenado o resultado
+  if(p==NULL)
+    return -1;
+  if(p->topo < 0)
+    return -1;  //pilha vazia
+  *res = p->valor[p->topo];
+  p->topo--;
+  return 1;
 }
 
 int main(){
