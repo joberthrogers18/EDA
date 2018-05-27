@@ -28,30 +28,57 @@ int push (Ppilha p, int val){ // acrescenta valor na pilha
 
 }
 
-int pop(Ppilha p, int *res){ // recebe a pilha e o valor que será armazenado o resultado
+int pop(Ppilha p){ // recebe a pilha e o valor que será armazenado o resultado
+  int aux = 0;
   if(p==NULL)
     return -1;
   if(p->topo < 0)
     return -1;  //pilha vazia
-  *res = p->valor[p->topo];
+  aux = p->valor[p->topo];
   p->topo--;
-  return 1;
+  return aux;
 }
 
-int peek(pPilha p){  // apenas retorna o topo da pilha
+int peek(Ppilha p){  // apenas retorna o topo da pilha
   return p->valor[p->topo];
 }
 
 void libera(Ppilha p){
   int i;
-  for(i = 0; i < p->topo; i++){
-    free(p->valor[i]);     // libera todos os valores da pilha
-  }
   free(p); // libera o ponteiro
 }
 
+void imprime(Ppilha p){
+  int i;
+  if(p == NULL){
+    printf("Pilha Vazia\n");
+    return;
+  }
+  printf("Numero de elementos na pilha: %d\n",p->topo+1);
 
+  for(i = p->topo; i >= 0; i--){
+    printf("pilha[%d] = %d\n",i,p->valor[i]);     // libera todos os valores da pilha
+  }
+}
 
 int main(){
+  Ppilha p;
+  int res;
 
+  p = criar_pilha();
+  push(p, 1);
+  imprime(p);
+  push(p, 2);
+  imprime(p);
+  push(p, 3);
+  imprime(p);
+  push(p, 4);
+  imprime(p);
+  push(p, 5);
+  imprime(p);
+  res = pop(p);
+  imprime(p);
+  libera(p);
+
+  return 0;
 }
