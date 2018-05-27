@@ -83,27 +83,97 @@ void initialize ()
 
 }
 
-int peekA(){
-  
+int peekA()
+{
+   return A[posA-1];
+}
+
+int peekB()
+{
+   return B[posB-1];
+}
+
+int peekC()
+{
+   return C[posC-1];
 }
 
 void moveAB ()
 {
+  if(posA == 0)
+  {
+    pushA(popB());
+  }
+  else if(posB == 0)
+  {
+    pushB(popA());
+  }
+  else if (peekB() < peekA())
+  {
+    pushA(popB());
+  }
+  else if (peekA() < peekB())
+  {
+    pushB(popA());
+  }
 
 }
 
 void moveAC ()
 {
-
+  if(posA == 0)
+  {
+    pushA(popC());
+  }
+  else if(posC == 0)
+  {
+    pushC(popA());
+  }
+  else if (peekC() < peekA())
+  {
+    pushA(popC());
+  }
+  else if (peekA() < peekC())
+  {
+    pushC(popA());
+  }
 }
 
 void moveBC ()
 {
-
+  if(posB == 0)
+  {
+    pushB(popC());
+  }
+  else if(posC == 0)
+  {
+    pushC(popB());
+  }
+  else if (peekC() < peekB())
+  {
+    pushB(popC());
+  }
+  else if (peekB() < peekC())
+  {
+    pushC(popB());
+  }
 }
+
 int main(int argc, char * argv[])
 {
   initialize();
+  show();
+  while(posB < 8)
+  {
+    moveAC();
+    show();
+    if(posB == 8)break;
+    moveAB();
+    show();
+    if(posB == 8)break;
+    moveBC();
+    show();
+  }
   show();
 
   return 0;
