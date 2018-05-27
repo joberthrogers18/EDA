@@ -17,7 +17,39 @@ void pushA (int n)
 
 int popA ()
 {
-  posA--;  
+  posA--;
+  return A[posA];
+}
+
+void pushB (int n)
+{
+  B[posB] = n;
+  posB++;
+
+}
+
+int popB ()
+{
+  posB--;
+  return B[posB];
+}
+
+void pushC (int n)
+{
+  C[posC] = n;
+  posC++;
+
+}
+
+int popC ()
+{
+  posC--;
+  return C[posC];
+}
+
+void show ()
+{
+
 }
 
 int main(int argc, char * argv[])
