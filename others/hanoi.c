@@ -49,11 +49,62 @@ int popC ()
 
 void show ()
 {
+  int i;
+  printf("A: ");
+  for(i = 0; i < posA; i++)
+  {
+    printf("%d ", A[i]);
+  }
+  printf("\n");
+
+  printf("B: ");
+  for(i = 0; i < posB ; i++)
+  {
+    printf("%d ", B[i]);
+  }
+  printf("\n");
+
+  printf("C: ");
+  for(i = 0; i < posC; i++)
+  {
+    printf("%d ", C[i]);
+  }
+  printf("\n");
 
 }
 
+void initialize ()
+{
+  int i;
+
+  for(i = 8; i >= 1; i--){
+    pushA(i);
+  }
+
+}
+
+int peekA(){
+  
+}
+
+void moveAB ()
+{
+
+}
+
+void moveAC ()
+{
+
+}
+
+void moveBC ()
+{
+
+}
 int main(int argc, char * argv[])
 {
+  initialize();
+  show();
 
   return 0;
 }
