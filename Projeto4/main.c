@@ -10,6 +10,13 @@ struct voo{
       };
 typedef struct voo Voo;
 
+/*Estruturas das pistas*/
+struct fila{
+      Voo* ini ;
+      Voo* fim ;
+};
+typedef struct fila Fila ;
+
 int num_voo()
 {
   int voo;
