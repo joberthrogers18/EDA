@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#define DEP 2
-#define LAND 4
+#define DEP 10
+#define LAND 20
 /*Estruturas dos voos*/
 struct voo{
       char codigo[7] ;
@@ -32,6 +32,9 @@ void imprimeFila(Voo* ini);
 Voo *EVretira(Voo* EV);
 int BuscaComb0(Voo* EV, Fila** pista);
 int max(int x1, int x2, int x3);
+void retira_Fila(Fila* f);
+int veri_comb0(Voo *ini);
+void retira_pri(Voo* ini, int liber);
 
 int main(){
     time_t agora1,agora2,agora3;
@@ -127,6 +130,71 @@ int main(){
    printf("\n\nTempo total na pista 2: %ld minutos\n\n", agora2);
    printf("\n\nTotal da simulação (em minutos): %d minutos\n\n", total_simulacao);
 
+   //retira_Fila(pista[0]);
+
+   //imprimeFila(pista[0]->ini);
+
+   /*printf("*****comeco**************\n");
+   imprimeFila(pista[0]->ini);
+   printf("********************\n");*/
+
+   int combustivel = 0;
+
+   while(1){
+
+      Fila* p;
+      Fila* p2;
+
+
+     /*combustivel = veri_comb0(pista[0]->ini);
+
+     printf("combustiveis 0 : %d\n", combustivel);
+
+     if(combustivel > 0)
+     {
+          retira_pri(pista[0]->ini,2);
+          printf("********************\n");
+          imprimeFila(pista[0]);
+          printf("********************\n");
+     }*/
+
+
+    if(pista[0]->ini!=NULL){
+
+         aux_temp0 += LAND;
+
+           printf("Voo: %s\n", pista[0]->ini->codigo);
+           printf("combustivel: %d\n", pista[0]->ini->comb);
+
+           p = pista[0]->ini;
+           pista[0]->ini= pista[0]->ini->prox;
+           free(p);
+
+           if(aux_temp0 >= 50){
+             decre_comb(pista[0]->ini);
+             aux_temp0 = 0;
+           }
+           agora1=agora1+LAND;
+
+           retira_pri(pista[0]->ini,10);
+
+     }
+
+     if(pista[1]->ini!=NULL){
+       printf("test2: %s\n", pista[1]->ini->codigo);
+       p2 = pista[1]->ini;
+       pista[1]->ini= pista[1]->ini->prox;
+       free(p2);
+     }
+
+     if(pista[0]->ini==NULL && pista[1]->ini==NULL){
+       printf("acabou\n");
+       break;
+     }
+
+   }
+
+
    system("pause");
    return 0;
 }//fim do programa principal
@@ -209,6 +277,64 @@ Voo* EVretira(Voo* EV){
   Voo* p = EV->prox;
   free(EV);
   return p;
+}
+
+void retira_Fila(Fila* f){
+  Fila* p = f->ini;
+  f->ini = f->ini->prox;
+  free(p);
+}
+
+void retira_pri(Voo* ini, int liber){
+/*  int i = 0;
+  printf("Seria a remoção");
+  while(ini!= NULL){
+      if(ini->prox->comb == 0){
+        /*if(i < liber){
+          printf("\n\nCódigo do voo: %s\n", ini->prox->codigo);
+          printf("Status: aeronave pousou\n");
+          printf("Horário do início do procedimento:\n");
+          printf("Número da pista: 1\n\n");
+          i++;
+        }
+
+        Voo* p = ini->prox;
+        ini = ini->prox->prox;
+        free(p);      printf("passou\n");
+        ini = ini->prox->prox;
+
+     }
+     else{
+       ini = ini->prox;
+     }
+  }*/
+
+  Voo* ant=NULL;
+  ant = ini;
+  ini = ini->prox;
+
+  while(ini!=NULL){
+     if(ini->comb==0){
+        ini = EVretira(ini);
+        ant->prox = ini;
+     }
+     ant = ini;
+     //retira o elemento do final da lista de eventos
+     if(ini!=NULL)
+     ini = ini->prox;
+  }
+
+}
+
+int veri_comb0(Voo *ini){
+  int comb = 0;
+  while(ini!=NULL){
+      if(ini->comb == 0){
+        comb++;
+      }
+      ini = ini->prox;
+  }
+  return comb;
 }
 
 //Busca os Voos com prioridade de atendimento e coloca nas filas
