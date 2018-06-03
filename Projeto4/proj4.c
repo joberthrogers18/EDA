@@ -176,7 +176,37 @@ int main(){
            }
            agora1=agora1+LAND;
 
-           retira_pri(pista[0]->ini,10);
+           combustivel = veri_comb0(pista[0]->ini);
+
+          if(combustivel == 1){
+            retira_pri(pista[0]->ini,1);
+          }
+          else if(combustivel == 2 && pista[1]->ini == NULL){
+            printf("\nALERTA GERAL DE DESVIO DE AERONAVE\n");
+            retira_pri(pista[0]->ini,2);
+          }
+          else if(combustivel == 2 && pista[1]->ini != NULL){
+            printf("\nALERTA GERAL DE DESVIO DE AERONAVE\n");
+            retira_pri(pista[0]->ini,1);
+            printf("ALERTA CRÍTICO, AERONAVE IRÁ CAIR\n");
+          }
+          else if(combustivel > 2 && pista[1]->ini == NULL){
+            printf("\nALERTA GERAL DE DESVIO DE AERONAVE\n");
+            retira_pri(pista[0]->ini,2);
+
+            for(int i = 2; i < combustivel; i++){
+              printf("ALERTA CRÍTICO, AERONAVE IRÁ CAIR\n");
+            }
+          }
+          else if(combustivel > 2 && pista[1]->ini != NULL){
+            printf("\nALERTA GERAL DE DESVIO DE AERONAVE\n");
+            retira_pri(pista[0]->ini,1);
+
+            for(int i = 1; i < combustivel; i++){
+              printf("ALERTA CRÍTICO, AERONAVE IRÁ CAIR\n");
+            }
+          }
+
 
      }
 
@@ -310,13 +340,16 @@ void retira_pri(Voo* ini, int liber){
   }*/
 
   Voo* ant=NULL;
+  int i = 0;
   ant = ini;
-  ini = ini->prox;
+  ini = ini;
 
   while(ini!=NULL){
-     if(ini->comb==0){
+     if(ini->comb==0 && i < liber){
+        printf("passou\n");
         ini = EVretira(ini);
         ant->prox = ini;
+        i++;
      }
      ant = ini;
      //retira o elemento do final da lista de eventos
