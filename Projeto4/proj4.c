@@ -35,6 +35,7 @@ int max(int x1, int x2, int x3);
 void retira_Fila(Fila* f);
 int veri_comb0(Voo *ini);
 void retira_pri(Voo* ini, int liber);
+void horas(int *hora,int *minutos,int agora);
 
 int main(){
     time_t agora1,agora2,agora3;
@@ -139,7 +140,12 @@ int main(){
    printf("********************\n");*/
 
    int combustivel = 0;
+   int hora1 = hora;
+   int min1 = min;
+   int hora2 = hora;
+   int min2 = min;
 
+   printf("Hora Atual: %d horas %d minutos\n", hora1,min1);
    while(1){
 
       Fila* p;
@@ -163,8 +169,11 @@ int main(){
 
          aux_temp0 += LAND;
 
-           printf("Voo: %s\n", pista[0]->ini->codigo);
-           printf("combustivel: %d\n", pista[0]->ini->comb);
+          printf("\nCódigo do voo: %s\n", pista[0]->ini->codigo);
+          printf("Status: aeronave pousou\n");
+          horas(&hora1, &min1, LAND);
+          printf("Hora Atual: %d horas %d minutos\n", hora1,min1);
+          printf("Número da pista: 1\n");
 
            p = pista[0]->ini;
            pista[0]->ini= pista[0]->ini->prox;
@@ -211,10 +220,18 @@ int main(){
      }
 
      if(pista[1]->ini!=NULL){
-       printf("test2: %s\n", pista[1]->ini->codigo);
+
+       printf("\nCódigo do voo: %s\n", pista[0]->ini->codigo);
+       printf("Status: aeronave decolou\n");
+       horas(&hora2, &min2, DEP);
+       printf("Hora Atual: %d horas %d minutos\n\n", hora2,min2);
+       printf("Número da pista: 2\n");
+
        p2 = pista[1]->ini;
        pista[1]->ini= pista[1]->ini->prox;
        free(p2);
+
+       agora2=agora2+DEP;
      }
 
      if(pista[0]->ini==NULL && pista[1]->ini==NULL){
@@ -401,6 +418,50 @@ int BuscaComb0(Voo* EV, Fila** pista){
    }
    //retorna o numero de Voos com combustivel 0
    return comb0;
+ }
+
+ void horas(int *hora,int *minutos,int agora){
+    int min_tot = 0, res_min = 0;
+    int horasaux = 0, minaux = 0;
+
+    /*min_tot = 60 - (*minutos + *agora);
+    if(min_tot > 0){
+        res_min = *minutos - *agora;
+        if (res_min < 0) {
+          res_min *= -1;
+        }
+
+        *minutos = res_min;
+        *hora += 1;
+
+        if(*hora >= 24){
+          *minutos = 0;
+          *hora = 0;
+        }
+    }*/
+
+    //horasaux = *agora/60;
+    //minaux = *agora%60;
+
+    if(*minutos + agora < 60){
+        *minutos += agora;
+
+        if(*hora >= 24){
+          *minutos = 0;
+          *hora = 0;
+        }
+    }
+    else if(*minutos + agora >= 60) {
+
+      if(*hora >= 24){
+        *minutos = 0;
+        *hora = 0;
+      }else{
+        *hora += 1;
+        *minutos =  (*minutos + agora) - 60;
+      }
+    }
+
  }
 
  /*Escolhe o maior dos 3 numeros*/
