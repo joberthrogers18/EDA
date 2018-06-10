@@ -14,6 +14,7 @@ void libera_ArvBin(ArvBin* raiz);
 void libera_NO(struct NO* no);
 int estaVazia_ArvBin(ArvBin* raiz);
 int altura_ArvBin(ArvBin* raiz);
+int totalNO_ArvBin(ArvBin* raiz);
 
 int main(int argc, char const *argv){
   ArvBin* raiz = cria_ArvBin();; // criando a raiz da arvore
@@ -63,16 +64,28 @@ int estaVazia_ArvBin(ArvBin* raiz)
 
 int altura_ArvBin(ArvBin* raiz)
 {
-  if(raiz == NULL)
+  if(raiz == NULL) // verifica se a alocação foi feita
     return 0;
-  if(*raiz == NULL)
+  if(*raiz == NULL) // verifica se o conteudo eh nulo
     return 0;
 
-  int alt_esquerda = altura_ArvBin(&((*raiz)->esq));
-  int alt_direita = altura_ArvBin(&((*raiz)->esq));
+  int alt_esquerda = altura_ArvBin(&((*raiz)->esq)); // recursivamente pelo nó esquerdo
+  int alt_direita = altura_ArvBin(&((*raiz)->esq)); // recursivamente pelo nó direito
 
-  if(alt_esquerda > alt_direita)
+  if(alt_esquerda > alt_direita)    // ver qual o maior nó retorna o tamanho do maior +1
     return (alt_esquerda + 1);
   else
     return (alt_direita + 1);
+}
+
+int totalNO_ArvBin(ArvBin* raiz){
+  if(raiz == NULL) // verfica se alocção foi feita
+    return 0;
+  if(*raiz == NULL) // verifica o conteúdo e retorna zero se null
+    return 0;
+
+  int no_esq = totalNO_ArvBin(&((*raiz)->esq));
+  int no_dir = totalNO_ArvBin(&((*raiz)->dir));
+  return (no_esq + no_dir + 1);
+
 }
