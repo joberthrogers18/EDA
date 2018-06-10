@@ -21,6 +21,7 @@ void posOrdem_ArvBin(ArvBin* raiz);
 int insere_ArvBin(ArvBin* raiz, int valor);
 int remove_ArvBin(ArvBin* raiz, int valor);
 struct NO* remove_atual(struct NO* atual);
+int consulta_ArvBin(ArvBin *raiz, int valor);
 
 int main(int argc, char const *argv){
   ArvBin* raiz = cria_ArvBin();; // criando a raiz da arvore
@@ -223,4 +224,20 @@ struct NO* remove_atual(struct NO* atual)
    free(atual);
    return no2;
 
+}
+
+int consulta_ArvBin(ArvBin *raiz, int valor){
+  if (raiz==NULL) return 0;
+  struct NO* atual = *raiz;
+  while(atual != NULL){
+    if(valor == atual->info){
+      return 1;
+      //aqui outras coisas podem ser feitas.
+    }
+    if(valor > atual->num)
+      atual = atual->direito;
+    else
+      atual = atual->esquerdo;
+  }
+  return 0;
 }
