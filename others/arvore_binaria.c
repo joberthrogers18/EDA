@@ -15,6 +15,7 @@ void libera_NO(struct NO* no);
 int estaVazia_ArvBin(ArvBin* raiz);
 int altura_ArvBin(ArvBin* raiz);
 int totalNO_ArvBin(ArvBin* raiz);
+void preOrdem_ArvBin(ArvBin* raiz);
 
 int main(int argc, char const *argv){
   ArvBin* raiz = cria_ArvBin();; // criando a raiz da arvore
@@ -78,7 +79,8 @@ int altura_ArvBin(ArvBin* raiz)
     return (alt_direita + 1);
 }
 
-int totalNO_ArvBin(ArvBin* raiz){
+int totalNO_ArvBin(ArvBin* raiz)
+{
   if(raiz == NULL) // verfica se alocção foi feita
     return 0;
   if(*raiz == NULL) // verifica o conteúdo e retorna zero se null
@@ -88,4 +90,14 @@ int totalNO_ArvBin(ArvBin* raiz){
   int no_dir = totalNO_ArvBin(&((*raiz)->dir));
   return (no_esq + no_dir + 1);
 
+}
+void preOrdem_ArvBin(ArvBin* raiz)
+{
+  if(raiz == NULL)
+    return;
+  if(*raiz != NULL){
+    printf("%d\n", (*raiz)->info);
+    preOrdem_ArvBin(&((*raiz)->esq));
+    preOrdem_ArvBin(&((*raiz)->dir));
+  }
 }
