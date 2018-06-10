@@ -16,6 +16,7 @@ int estaVazia_ArvBin(ArvBin* raiz);
 int altura_ArvBin(ArvBin* raiz);
 int totalNO_ArvBin(ArvBin* raiz);
 void preOrdem_ArvBin(ArvBin* raiz);
+void preOrdem_ArvBin(ArvBin* raiz);
 
 int main(int argc, char const *argv){
   ArvBin* raiz = cria_ArvBin();; // criando a raiz da arvore
@@ -91,13 +92,13 @@ int totalNO_ArvBin(ArvBin* raiz)
   return (no_esq + no_dir + 1);
 
 }
-void preOrdem_ArvBin(ArvBin* raiz)
+void emOrdem_ArvBin(ArvBin* raiz)
 {
   if(raiz == NULL)
     return;
   if(*raiz != NULL){
+    emOrdem_ArvBin(&((*raiz)->esq));
     printf("%d\n", (*raiz)->info);
-    preOrdem_ArvBin(&((*raiz)->esq));
-    preOrdem_ArvBin(&((*raiz)->dir));
+    emOrdem_ArvBin(&((*raiz)->dir));
   }
 }
