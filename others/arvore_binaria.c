@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<stdbool.h>
 
 #define espaco 4
 #define MAX_HEIGHT 1000
@@ -37,222 +38,6 @@ struct NO{
 
 typedef struct NO* ArvBin; //é um ponteiro que aponta para minha struct nó
 
-//adjust gap between left and right nos
-int gap = 3;
-
-//used for printing next no in the same level,
-//this is the x coordinate of the next char printed
-int print_next;
-
-int MIN(int X, int Y) {
-    return ((X) < (Y)) ? (X) : (Y);
-}
-
-int MAX(int X, int Y) {
-    return ((X) > (Y)) ? (X) : (Y);
-}
-
-BSTNode *build_ascii_tree_recursive(struct NO *arvore) {
-    BSTNode *no;
-
-    if (arvore == NULL) return NULL;
-
-    no = malloc(sizeof(BSTNode));
-    no->ptesq = build_ascii_tree_recursive(arvore->esq);
-    no->ptdir = build_ascii_tree_recursive(arvore->dir);
-
-    if (no->ptesq != NULL) {
-        no->ptesq->parent_dir = -1;
-    }
-
-    if (no->ptdir != NULL) {
-        no->ptdir->parent_dir = 1;
-    }
-
-    sprintf(no->label, "%d", arvore->info);
-    no->element = strlen(no->label);
-
-    return no;
-}
-
-
-//Copy the tree into the ascii no structre
-BSTNode *build_ascii_tree(struct NO *arvore) {
-    BSTNode *no;
-    if (arvore == NULL) return NULL;
-    no = build_ascii_tree_recursive(arvore);
-    no->parent_dir = 0;
-    return no;
-}
-
-//Free all the nos of the given tree
-void free_ascii_tree(BSTNode *no) {
-    if (no == NULL) return;
-    free_ascii_tree(no->ptesq);
-    free_ascii_tree(no->ptdir);
-    free(no);
-}
-
-//The following function fills in the lprofile array for the given tree.
-//It assumes that the center of the label of the root of this tree
-//is located at a position (x,y).  It assumes that the edge_length
-//fields have been computed for this tree.
-void compute_lprofile(BSTNode *no, int x, int y) {
-    int i, eh_esq;
-    if (no == NULL) return;
-    eh_esq = (no->parent_dir == -1);
-    lprofile[y] = MIN(lprofile[y], x - ((no->element - eh_esq) / 2));
-    if (no->ptesq != NULL) {
-        for (i = 1; i <= no->edge_length && y + i < MAX_HEIGHT; i++) {
-            lprofile[y + i] = MIN(lprofile[y + i], x - i);
-        }
-    }
-    compute_lprofile(no->ptesq, x - no->edge_length - 1, y + no->edge_length + 1);
-    compute_lprofile(no->ptdir, x + no->edge_length + 1, y + no->edge_length + 1);
-}
-
-void compute_rprofile(BSTNode *no, int x, int y) {
-    int i, n_eh_esq;
-    if (no == NULL) return;
-    n_eh_esq = (no->parent_dir != -1);
-    rprofile[y] = MAX(rprofile[y], x + ((no->element - n_eh_esq) / 2));
-    if (no->ptdir != NULL) {
-        for (i = 1; i <= no->edge_length && y + i < MAX_HEIGHT; i++) {
-            rprofile[y + i] = MAX(rprofile[y + i], x + i);
-        }
-    }
-    compute_rprofile(no->ptesq, x - no->edge_length - 1, y + no->edge_length + 1);
-    compute_rprofile(no->ptdir, x + no->edge_length + 1, y + no->edge_length + 1);
-}
-
-//This function fills in the edge_length and
-//altura fields of the specified tree
-void filledge(BSTNode *no) {
-    int h, hmin, i, delta;
-    if (no == NULL) return;
-    filledge(no->ptesq);
-    filledge(no->ptdir);
-
-    /* first fill in the edge_length of no */
-    if (no->ptdir == NULL && no->ptesq == NULL) {
-        no->edge_length = 0;
-    }
-    else {
-        if (no->ptesq != NULL) {
-            for (i = 0; i < no->ptesq->altura && i < MAX_HEIGHT; i++) {
-                rprofile[i] = -INFINITY;
-            }
-            compute_rprofile(no->ptesq, 0, 0);
-            hmin = no->ptesq->altura;
-        }
-        else {
-            hmin = 0;
-        }
-        if (no->ptdir != NULL) {
-            for (i = 0; i < no->ptdir->altura && i < MAX_HEIGHT; i++) {
-                lprofile[i] = INFINITY;
-            }
-            compute_lprofile(no->ptdir, 0, 0);
-            hmin = MIN(no->ptdir->altura, hmin);
-        }
-        else {
-            hmin = 0;
-        }
-        delta = 4;
-        for (i = 0; i < hmin; i++) {
-            delta = MAX(delta, gap + 1 + rprofile[i] - lprofile[i]);
-        }
-
-        //If the no has two children of altura 1, then we allow the
-        //two leaves to be within 1, instead of 2
-        if (((no->ptesq != NULL && no->ptesq->altura == 1) ||
-             (no->ptdir != NULL && no->ptdir->altura == 1)) && delta > 4) {
-            delta--;
-        }
-
-        no->edge_length = ((delta + 1) / 2) - 1;
-    }
-
-    //now fill in the altura of no
-    h = 1;
-    if (no->ptesq != NULL) {
-        h = MAX(no->ptesq->altura + no->edge_length + 1, h);
-    }
-    if (no->ptdir != NULL) {
-        h = MAX(no->ptdir->altura + no->edge_length + 1, h);
-    }
-    no->altura = h;
-}
-
-//This function prints the given level of the given tree, assuming
-//that the no has the given x cordinate.
-void printLevel(BSTNode *no, int x, int level) {
-    int i, isleft;
-    if (no == NULL) return;
-    isleft = (no->parent_dir == -1);
-    if (level == 0) {
-        for (i = 0; i < (x - print_next - ((no->element - isleft) / 2)); i++) {
-            printf(" ");
-        }
-        print_next += i;
-        printf("%s", no->label);
-        print_next += no->element;
-    }
-    else if (no->edge_length >= level) {
-        if (no->ptesq != NULL) {
-            for (i = 0; i < (x - print_next - (level)); i++) {
-                printf(" ");
-            }
-            print_next += i;
-            printf("/");
-            print_next++;
-        }
-        if (no->ptdir != NULL) {
-            for (i = 0; i < (x - print_next + (level)); i++) {
-                printf(" ");
-            }
-            print_next += i;
-            printf("\\");
-            print_next++;
-        }
-    }
-    else {
-        printLevel(no->ptesq,
-                   x - no->edge_length - 1,
-                   level - no->edge_length - 1);
-        printLevel(no->ptdir,
-                   x + no->edge_length + 1,
-                   level - no->edge_length - 1);
-    }
-}
-
-//prints ascii tree for given Tree structure
-void printElements(ArvBin *raiz) {
-    BSTNode *proot;
-    int xmin, i;
-    if (raiz == NULL) return;
-    proot = build_ascii_tree(*raiz);
-    filledge(proot);
-    for (i = 0; i < proot->altura && i < MAX_HEIGHT; i++) {
-        lprofile[i] = INFINITY;
-    }
-    compute_lprofile(proot, 0, 0);
-    xmin = 0;
-    for (i = 0; i < proot->altura && i < MAX_HEIGHT; i++) {
-        xmin = MIN(xmin, lprofile[i]);
-    }
-    for (i = 0; i < proot->altura; i++) {
-        print_next = 0;
-        printLevel(proot, -xmin, i);
-        printf("\n");
-    }
-    if (proot->altura >= MAX_HEIGHT) {
-        printf("(This tree is taller than %d, and may be drawn incorrectly.)\n", MAX_HEIGHT);
-    }
-    free_ascii_tree(proot);
-}
-
-
 ArvBin* cria_ArvBin(); // criação de uma arvore binaria null
 void libera_ArvBin(ArvBin* raiz);
 void libera_NO(struct NO* no);
@@ -272,6 +57,17 @@ void desenha_arvore_ver(struct NO *arvore, int depth, char *path, int direita);
 void draw_arvore_hor(struct NO *arvore);
 void draw_arvore_ver(struct NO *arvore);
 void ler_arquivo(char* nome, ArvBin* raiz);
+int MIN(int X, int Y);
+int MAX(int X, int Y);
+BSTNode *build_ascii_tree_recursive(struct NO *arvore);
+BSTNode *build_ascii_tree(struct NO *arvore);
+void free_ascii_tree(BSTNode *node);
+void compute_lprofile(BSTNode *node, int x, int y);
+void compute_rprofile(BSTNode *node, int x, int y);
+void filledge(BSTNode *node);
+void printLevel(BSTNode *node, int x, int level);
+void printElements(ArvBin* raiz);
+bool esta_Completa (struct NO* no, unsigned int index,unsigned int numeros_no);
 
 int main(int argc, char const *argv){
 
@@ -287,6 +83,16 @@ int main(int argc, char const *argv){
   ler_arquivo(nome,raiz);
 
   printElements(raiz);
+
+  unsigned int numeros_no = totalNO_ArvBin(raiz);
+  unsigned int index = 0;
+
+  if(esta_Completa(*raiz, index, numeros_no)){
+    printf("Arvore está cheia\n");
+  }
+  else{
+    printf("Arvore está  não cheia\n");
+  }
 
   x = altura_ArvBin(raiz);
 
@@ -626,7 +432,8 @@ void ler_arquivo(char* nome, ArvBin* raiz)
   char nome_f[200];
   FILE* arquivo;
   int f;
-  arquivo = fopen("BSTs/bst1.txt", "r");
+  sprintf(nome_f,"BSTs/%s.txt",nome);
+  arquivo = fopen(nome_f, "r");
 
   if(arquivo == NULL){
     printf("Não existe esse arquivo\n");
@@ -635,9 +442,246 @@ void ler_arquivo(char* nome, ArvBin* raiz)
   else{
     while(!feof(arquivo)){
       fscanf(arquivo,"%d ",&f);
-      insere_ArvBin(raiz,f);
+      //insere_ArvBin(raiz,f);
     }
     fclose(arquivo);
   }
 
+  insere_ArvBin(raiz,5);
+  insere_ArvBin(raiz,4);
+  insere_ArvBin(raiz,6);
+
+}
+
+
+//adjust gap between left and right nos
+int gap = 3;
+
+//used for printing next no in the same level,
+//this is the x coordinate of the next char printed
+int print_next;
+
+int MIN(int X, int Y) {
+    return ((X) < (Y)) ? (X) : (Y);
+}
+
+int MAX(int X, int Y) {
+    return ((X) > (Y)) ? (X) : (Y);
+}
+
+BSTNode *build_ascii_tree_recursive(struct NO *arvore) {
+    BSTNode *no;
+
+    if (arvore == NULL) return NULL;
+
+    no = malloc(sizeof(BSTNode));
+    no->ptesq = build_ascii_tree_recursive(arvore->esq);
+    no->ptdir = build_ascii_tree_recursive(arvore->dir);
+
+    if (no->ptesq != NULL) {
+        no->ptesq->parent_dir = -1;
+    }
+
+    if (no->ptdir != NULL) {
+        no->ptdir->parent_dir = 1;
+    }
+
+    sprintf(no->label, "%d", arvore->info);
+    no->element = strlen(no->label);
+
+    return no;
+}
+
+
+//Copy the tree into the ascii no structre
+BSTNode *build_ascii_tree(struct NO *arvore) {
+    BSTNode *no;
+    if (arvore == NULL) return NULL;
+    no = build_ascii_tree_recursive(arvore);
+    no->parent_dir = 0;
+    return no;
+}
+
+//Free all the nos of the given tree
+void free_ascii_tree(BSTNode *no) {
+    if (no == NULL) return;
+    free_ascii_tree(no->ptesq);
+    free_ascii_tree(no->ptdir);
+    free(no);
+}
+
+//The following function fills in the lprofile array for the given tree.
+//It assumes that the center of the label of the root of this tree
+//is located at a position (x,y).  It assumes that the edge_length
+//fields have been computed for this tree.
+void compute_lprofile(BSTNode *no, int x, int y) {
+    int i, eh_esq;
+    if (no == NULL) return;
+    eh_esq = (no->parent_dir == -1);
+    lprofile[y] = MIN(lprofile[y], x - ((no->element - eh_esq) / 2));
+    if (no->ptesq != NULL) {
+        for (i = 1; i <= no->edge_length && y + i < MAX_HEIGHT; i++) {
+            lprofile[y + i] = MIN(lprofile[y + i], x - i);
+        }
+    }
+    compute_lprofile(no->ptesq, x - no->edge_length - 1, y + no->edge_length + 1);
+    compute_lprofile(no->ptdir, x + no->edge_length + 1, y + no->edge_length + 1);
+}
+
+void compute_rprofile(BSTNode *no, int x, int y) {
+    int i, n_eh_esq;
+    if (no == NULL) return;
+    n_eh_esq = (no->parent_dir != -1);
+    rprofile[y] = MAX(rprofile[y], x + ((no->element - n_eh_esq) / 2));
+    if (no->ptdir != NULL) {
+        for (i = 1; i <= no->edge_length && y + i < MAX_HEIGHT; i++) {
+            rprofile[y + i] = MAX(rprofile[y + i], x + i);
+        }
+    }
+    compute_rprofile(no->ptesq, x - no->edge_length - 1, y + no->edge_length + 1);
+    compute_rprofile(no->ptdir, x + no->edge_length + 1, y + no->edge_length + 1);
+}
+
+//This function fills in the edge_length and
+//altura fields of the specified tree
+void filledge(BSTNode *no) {
+    int h, hmin, i, delta;
+    if (no == NULL) return;
+    filledge(no->ptesq);
+    filledge(no->ptdir);
+
+    /* first fill in the edge_length of no */
+    if (no->ptdir == NULL && no->ptesq == NULL) {
+        no->edge_length = 0;
+    }
+    else {
+        if (no->ptesq != NULL) {
+            for (i = 0; i < no->ptesq->altura && i < MAX_HEIGHT; i++) {
+                rprofile[i] = -INFINITY;
+            }
+            compute_rprofile(no->ptesq, 0, 0);
+            hmin = no->ptesq->altura;
+        }
+        else {
+            hmin = 0;
+        }
+        if (no->ptdir != NULL) {
+            for (i = 0; i < no->ptdir->altura && i < MAX_HEIGHT; i++) {
+                lprofile[i] = INFINITY;
+            }
+            compute_lprofile(no->ptdir, 0, 0);
+            hmin = MIN(no->ptdir->altura, hmin);
+        }
+        else {
+            hmin = 0;
+        }
+        delta = 4;
+        for (i = 0; i < hmin; i++) {
+            delta = MAX(delta, gap + 1 + rprofile[i] - lprofile[i]);
+        }
+
+        //If the no has two children of altura 1, then we allow the
+        //two leaves to be within 1, instead of 2
+        if (((no->ptesq != NULL && no->ptesq->altura == 1) ||
+             (no->ptdir != NULL && no->ptdir->altura == 1)) && delta > 4) {
+            delta--;
+        }
+
+        no->edge_length = ((delta + 1) / 2) - 1;
+    }
+
+    //now fill in the altura of no
+    h = 1;
+    if (no->ptesq != NULL) {
+        h = MAX(no->ptesq->altura + no->edge_length + 1, h);
+    }
+    if (no->ptdir != NULL) {
+        h = MAX(no->ptdir->altura + no->edge_length + 1, h);
+    }
+    no->altura = h;
+}
+
+//This function prints the given level of the given tree, assuming
+//that the no has the given x cordinate.
+void printLevel(BSTNode *no, int x, int level) {
+    int i, isleft;
+    if (no == NULL) return;
+    isleft = (no->parent_dir == -1);
+    if (level == 0) {
+        for (i = 0; i < (x - print_next - ((no->element - isleft) / 2)); i++) {
+            printf(" ");
+        }
+        print_next += i;
+        printf("%s", no->label);
+        print_next += no->element;
+    }
+    else if (no->edge_length >= level) {
+        if (no->ptesq != NULL) {
+            for (i = 0; i < (x - print_next - (level)); i++) {
+                printf(" ");
+            }
+            print_next += i;
+            printf("/");
+            print_next++;
+        }
+        if (no->ptdir != NULL) {
+            for (i = 0; i < (x - print_next + (level)); i++) {
+                printf(" ");
+            }
+            print_next += i;
+            printf("\\");
+            print_next++;
+        }
+    }
+    else {
+        printLevel(no->ptesq,
+                   x - no->edge_length - 1,
+                   level - no->edge_length - 1);
+        printLevel(no->ptdir,
+                   x + no->edge_length + 1,
+                   level - no->edge_length - 1);
+    }
+}
+
+//prints ascii tree for given Tree structure
+void printElements(ArvBin *raiz) {
+    BSTNode *proot;
+    int xmin, i;
+    if (raiz == NULL) return;
+    proot = build_ascii_tree(*raiz);
+    filledge(proot);
+    for (i = 0; i < proot->altura && i < MAX_HEIGHT; i++) {
+        lprofile[i] = INFINITY;
+    }
+    compute_lprofile(proot, 0, 0);
+    xmin = 0;
+    for (i = 0; i < proot->altura && i < MAX_HEIGHT; i++) {
+        xmin = MIN(xmin, lprofile[i]);
+    }
+    for (i = 0; i < proot->altura; i++) {
+        print_next = 0;
+        printLevel(proot, -xmin, i);
+        printf("\n");
+    }
+    if (proot->altura >= MAX_HEIGHT) {
+        printf("(This tree is taller than %d, and may be drawn incorrectly.)\n", MAX_HEIGHT);
+    }
+    free_ascii_tree(proot);
+}
+
+bool esta_Completa (struct NO* no, unsigned int index,
+                 unsigned int numeros_no)
+{
+    // An empty tree is complete
+    if (no == NULL)
+        return (true);
+
+    // If index assigned to current node is more than
+    // number of nodes in tree, then tree is not complete
+    if (index >= numeros_no)
+        return (false);
+
+    // Recur for left and right subtrees
+    return (esta_Completa(no->esq, 2*index + 1, numeros_no) &&
+            esta_Completa(no->dir, 2*index + 2, numeros_no));
 }
