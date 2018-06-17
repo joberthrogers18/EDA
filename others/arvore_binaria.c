@@ -122,22 +122,25 @@ int main(int argc, char const *argv){
       break;
 
       case '5':
-
+        remove_ArvBin(raiz,6);
         menu();
       break;
 
       case '6':
-
+        printf("Em Ordem:\n");
+        emOrdem_ArvBin(raiz);
         menu();
       break;
 
       case '7':
-
+        printf("Pre Ordem:\n");
+        preOrdem_ArvBin(raiz);
         menu();
       break;
 
       case '8':
-
+        printf("Pos Ordem:\n");
+        posOrdem_ArvBin(raiz);
         menu();
       break;
 
@@ -236,7 +239,7 @@ void preOrdem_ArvBin(ArvBin* raiz)
   if(raiz == NULL)
     return;
   if(*raiz != NULL){
-    printf("%d\n", (*raiz)->info);
+    printf("%d, ", (*raiz)->info);
     preOrdem_ArvBin(&((*raiz)->esq));
     preOrdem_ArvBin(&((*raiz)->dir));
   }
@@ -248,7 +251,7 @@ void emOrdem_ArvBin(ArvBin* raiz)
     return;
   if(*raiz != NULL){
     emOrdem_ArvBin(&((*raiz)->esq));
-    printf("%d\n", (*raiz)->info);
+    printf("%d, ", (*raiz)->info);
     emOrdem_ArvBin(&((*raiz)->dir));
   }
 }
@@ -260,7 +263,7 @@ void posOrdem_ArvBin(ArvBin* raiz)
   if(*raiz != NULL){
     posOrdem_ArvBin(&((*raiz)->esq));
     posOrdem_ArvBin(&((*raiz)->dir));
-    printf("%d\n", (*raiz)->info);
+    printf("%d, ", (*raiz)->info);
   }
 }
 
