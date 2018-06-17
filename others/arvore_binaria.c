@@ -72,7 +72,7 @@ bool esta_Completa (struct NO* no, unsigned int index,unsigned int numeros_no);
 
 int main(int argc, char const *argv){
 
-  int x;
+  int x, procura;
   char nome[200], opcao;
 
   printf("Digite o arquivo que deseja ler: \n");
@@ -110,8 +110,12 @@ int main(int argc, char const *argv){
         }
       break;
       case '3':
-        consulta_ArvBin(raiz, 3);
+        {
+        printf("Digite o numero que deseja procurar: \n");
+        scanf("%d", &procura);
+        consulta_ArvBin(raiz, procura);
         menu();
+      }
       break;
 
       case '4':
@@ -122,25 +126,30 @@ int main(int argc, char const *argv){
       break;
 
       case '5':
-        remove_ArvBin(raiz,6);
+        printf("Digite o numero que deseja remover: \n");
+        scanf("%d", &procura);
+        remove_ArvBin(raiz,procura);
         menu();
       break;
 
       case '6':
         printf("Em Ordem:\n");
         emOrdem_ArvBin(raiz);
+        printf("\n");
         menu();
       break;
 
       case '7':
         printf("Pre Ordem:\n");
         preOrdem_ArvBin(raiz);
+        printf("\n");
         menu();
       break;
 
       case '8':
         printf("Pos Ordem:\n");
         posOrdem_ArvBin(raiz);
+        printf("\n");
         menu();
       break;
 
