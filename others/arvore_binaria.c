@@ -73,7 +73,7 @@ bool esta_Completa (struct NO* no, unsigned int index,unsigned int numeros_no);
 int main(int argc, char const *argv){
 
   int x;
-  char nome[200];
+  char nome[200], opcao;
 
   printf("Digite o arquivo que deseja ler: \n");
   scanf("%[^\n]s", nome);
@@ -83,25 +83,72 @@ int main(int argc, char const *argv){
 
   ler_arquivo(nome,raiz);
 
-  printElements(raiz);
+  menu();
 
-  unsigned int numeros_no = totalNO_ArvBin(raiz);
-  unsigned int index = 0;
+  while(1){
 
-  if(esta_Completa(*raiz, index, numeros_no)){
-    printf("Arvore está cheia\n");
+
+    scanf("%c", &opcao);
+
+    switch (opcao) {
+      case '1':
+        printElements(raiz);
+        menu();
+      break;
+      case '2':
+        {
+          unsigned int numeros_no = totalNO_ArvBin(raiz);
+          unsigned int index = 0;
+
+          if(esta_Completa(*raiz, index, numeros_no)){
+            printf("Arvore está cheia\n");
+          }
+          else{
+            printf("Arvore está  não cheia\n");
+          }
+          menu();
+        }
+      break;
+      case '3':
+
+        menu();
+      break;
+
+      case '4':
+        x = altura_ArvBin(raiz);
+
+        printf("Altura Arvore Binaria: %d\n", x);
+        menu();
+      break;
+
+      case '5':
+
+        menu();
+      break;
+
+      case '6':
+
+        menu();
+      break;
+
+      case '7':
+
+        menu();
+      break;
+
+      case '8':
+
+        menu();
+      break;
+
+      case '9':
+        libera_ArvBin(raiz);
+        return 0;
+      break;
+    }
+
   }
-  else{
-    printf("Arvore está  não cheia\n");
-  }
 
-  x = altura_ArvBin(raiz);
-
-  printf("altura_ArvBin: %d\n", x);
-
-  libera_ArvBin(raiz);
-
-  return 0;
 }
 
 void menu()
