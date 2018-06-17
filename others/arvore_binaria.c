@@ -38,6 +38,7 @@ struct NO{
 
 typedef struct NO* ArvBin; //é um ponteiro que aponta para minha struct nó
 
+void menu();
 ArvBin* cria_ArvBin(); // criação de uma arvore binaria null
 void libera_ArvBin(ArvBin* raiz);
 void libera_NO(struct NO* no);
@@ -101,6 +102,19 @@ int main(int argc, char const *argv){
   libera_ArvBin(raiz);
 
   return 0;
+}
+
+void menu()
+{
+  printf("1) mostrar árvore: \n");
+  printf("2) verificar se arvore está cheia\n");
+  printf("3) Procurar valor\n");
+  printf("4) Tamanho da Arvore:\n");
+  printf("5) remover valor\n");
+  printf("6) printar emOrdem\n");
+  printf("7) printar preOrdem\n");
+  printf("8) printar posOrdem\n");
+  printf("9)sair\n");
 }
 
 ArvBin* cria_ArvBin()
