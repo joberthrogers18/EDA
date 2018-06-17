@@ -51,7 +51,7 @@ void posOrdem_ArvBin(ArvBin* raiz);
 int insere_ArvBin(ArvBin* raiz, int valor);
 int remove_ArvBin(ArvBin* raiz, int valor);
 struct NO* remove_atual(struct NO* atual);
-int consulta_ArvBin(ArvBin *raiz, int valor);
+void consulta_ArvBin(ArvBin *raiz, int valor);
 void impre_ArvBin(ArvBin* raiz);
 void desenha_arvore_horiz(struct NO *arvore, int depth, char *path, int direita);
 void desenha_arvore_ver(struct NO *arvore, int depth, char *path, int direita);
@@ -110,7 +110,7 @@ int main(int argc, char const *argv){
         }
       break;
       case '3':
-
+        consulta_ArvBin(raiz, 3);
         menu();
       break;
 
@@ -371,20 +371,49 @@ struct NO* remove_atual(struct NO* atual)
 
 }
 
-int consulta_ArvBin(ArvBin *raiz, int valor){
-  if (raiz==NULL) return 0;
+void consulta_ArvBin(ArvBin *raiz, int valor){
+  int i = 1;
+  if (raiz==NULL) printf("Não há arvore alocada\n");
   struct NO* atual = *raiz;
-  while(atual != NULL){
+  struct NO* ant = NULL;
+  while(atual->esq != NULL || atual->dir != NULL){
     if(valor == atual->info){
-      return 1;
+      printf("Valor do atual:%d\n", atual->info);
+      printf("nivel: %d\n", i);
       //aqui outras coisas podem ser feitas.
     }
-    if(valor > atual->info)
+    if(valor > atual->info){
+      ant = atual;
       atual = atual->dir;
-    else
+      i++;
+    }
+    else{
+      ant = atual;
       atual = atual->esq;
+      i++;
+    }
   }
-  return 0;
+
+  if(ant != NULL)
+    printf("Valor do pai:%d\n", ant->info);
+
+  if(ant->dir != NULL){
+      if(ant->esq->info == valor)
+        printf("Valor do irmão:%d\n", ant->dir->info);
+  }
+  else if(ant->dir != NULL){
+    if(ant->dir->info == valor)
+      printf("Valor do irmão:%d\n", ant->esq->info);
+  }
+
+  if(atual->info != valor){
+    printf("O valor não se encontrar na árvora\n");
+  }
+  else{
+    printf("Valor do atual:%d\n", atual->info);
+    printf("nivel: %d\n", i);
+  }
+
 }
 
 //secondary function
@@ -510,6 +539,7 @@ void ler_arquivo(char* nome, ArvBin* raiz)
 
   insere_ArvBin(raiz,5);
   insere_ArvBin(raiz,4);
+  insere_ArvBin(raiz, 3);
   insere_ArvBin(raiz,6);
 
 }
